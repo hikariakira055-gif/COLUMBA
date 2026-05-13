@@ -1,0 +1,69 @@
+// Prendre l'ip de lutilisateur courant
+
+ip a >> o && grep "inet " o >> p && awk '{print $2}' p |tail -1 >> a && awk -F '/' '{print $1}' a
+
+
+# Exemple : Envoyer "41" (le code hex pour 'A')
+ping -p 41 [IP_CIBLE]
+
+# Convertit "Hello" en Hex et l'envoie
+msg_hex=$(echo -n "Hello" | xxd -p)
+ping -c 1 -p $msg_hex [IP_CIBLE]
+
+sudo tcpdump -i any icmp -A
+
+# On utilise l'option -p (pattern) pour injecter nos données
+ping -c 1 -p "414243" [IP_CIBLE]
+
+sudo tcpdump -i lo icmp -X
+(L'option -X affiche le contenu en Hexadécimal ET en texte ASCII !)
+
+ping -c 1 -p 414243 localhost
+
+sudo tcpdump -i lo -X icmp // ecoute
+-i lo : Écoute sur l'interface locale (localhost).
+
+-X : Affiche le contenu en Hexadécimal et en ASCII (le texte lisible)
+
+# On envoie "AKIRA" (414b495241 en hex)
+ping -c 1 -p 414b495241 localhost
+
+# On écoute les pings qui arrivent de l'extérieur
+sudo tcpdump -i any icmp -v -X
+
+# Capture le ping, extrait la donnée, et la convertit en texte
+sudo tcpdump -i any -l -j adapter_uns_pkts icmp[icmptype]=icmp-echo -w - | stdbuf -oL strings | grep "ton_mot_cle"
+
+sudo tshark -i any -Y "icmp.type==8" -T fields -e data.data | xxd -r -p
+(optionnel)
+
+
+
+--test--
+
+# Pour voir le code hexa de ton message
+echo -n "Akira" | xxd -p
+
+# -c 1 : Envoyer un seul paquet
+# -p : Injecter ton code hexa (celui trouvé à l'étape 1)
+# Remplace 127.0.0.1 par l'IP de ton pote si besoin
+ping -c 1 -p 416b697261 127.0.0.1
+
+0x0020:  0000 0000 0000 0000 416b 6972 6141 6b69  ........AkiraAki
+0x0030:  7261 416b 6972 6141 6b69 7261 416b 6972  raAkiraAkiraAkir
+
+
+# Exemple pour le message "HELLO"
+echo -n "HELLO" | xxd -p
+
+# Exemple pour le message "HELLO"
+echo -n "HELLO" | xxd -p
+
+# Remplace 127.0.0.1 par l'IP de la cible si c'est un pote
+# Remplace 48454c4c4f par ton code hexa de l'étape 1
+ping -c 1 -p 48454c4c4f 127.0.0.1
+
+# Lancer l'écoute en arrière-plan et enregistrer dans chat.log
+sudo tcpdump -i any -l -A icmp > chat.log &
+
+sudo tcpdump -i any icmp > chat.log & // lance en arriere plans
