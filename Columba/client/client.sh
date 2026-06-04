@@ -1,5 +1,6 @@
 #!/bin/bash
-./clisten.sh & # ecoute permanent 
+pkill -f ncat
+./clisten.sh >/dev/null 2>&1 & # ecoute permanent 
 echo -n "Entree l'adress du Serveur : "
 read uss
 pkg_value=3
@@ -16,10 +17,14 @@ if [ $ping_result1 = "6" ]; then
     read ip_destinataire
     echo -n "Message : "
     read msg
+
+    touch msg_
+
+    echo $ip_destinataire >> msg_
+    echo " " >> msg_
+    echo $msg >> msg_
     
-
-
-    #ncat 192.168.1.50 5555 < mon_fichier.txt 
+    ncat $uss 5555 < msg_ 
 
 else
     echo "Desoler serveur hors service"
@@ -27,3 +32,4 @@ else
 fi
 
 
+rm msg_

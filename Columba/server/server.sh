@@ -1,18 +1,20 @@
 #!/bin/bash
-
+pkill -f ncat
 ip_user=$(ip a >> o && grep "inet " o >> p && awk '{print $2}' p |tail -1 >> a && awk -F '/' '{print $1}' a)
 rm a o p
-
+./slisten.sh >/dev/null 2>&1 &
 echo $ip_user
 
 while true; do
-    size=$(du -sh inbox | awk -F "K" '{print $1}')
-    if [ $size != "4,0" ]; then 
+    
+    if [ $(ls inbox | wc -l) -gt 0 ]; then
 
         for file in ./inbox/*.in; do 
 
             echo "$file"
             
+            if [ ! -f "$file" ]; then continue; fi
+
             uss=$(head -1 $file)
 
             ping -c 3 $uss > a
@@ -21,16 +23,19 @@ while true; do
 
 
             if [ $ping_result1 = "6" ]; then
-                echo "votre correspondant est disponible !"
+                echo "votre correspondant est disponible "
 
-                ncat $uss 5555 < $file
+                #ncat $uss 5555 < $file
+                rm $file
 
             else
-                echo "votre correspondant n'est pas disponible !"
+                echo "votre correspondant nest pas disponible "
             fi
 
         done
 
+    else
+        echo "There is nothing to treat"
     fi
 
 done
