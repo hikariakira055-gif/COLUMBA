@@ -15,7 +15,7 @@ while true; do
             
             if [ ! -f "$file" ]; then continue; fi
 
-            uss=$(head -1 $file)
+            uss=$(awk '$1 == "ip:" {print $2}' $file)
 
             ping -c 3 $uss > a
             ping_result1=$(awk -F "" '{print $1}' a | head -4 | tail -1)

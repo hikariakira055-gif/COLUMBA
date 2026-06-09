@@ -27,39 +27,44 @@ while true; do
 	fi
 	#Écoute en attente de message
 	if [ $ACTION -eq 2 ];then
+	declare -A tab
 		FICHIER_INBOX="./client/inbox__"
-
+		i=1
 		for file in ./client/inbox/*.in; do 
 			
 			# date=$(awk '$1 == "ip:" {print $4}' $file) 
 			# ip=$(awk '$1 == "ip:" {print $2}' $file)
 
 			# msg=$("$date|$ip")
+			tab[$i]=$file
+			echo $i >> $FICHIER_INBOX
 			awk '$1 == "ip:" {print $4}' $file >> $FICHIER_INBOX
 			awk '$1 == "ip:" {print $2}' $file >> $FICHIER_INBOX
 			awk '$1 == "ip:" {print $6}' $file >> $FICHIER_INBOX
-			awk '$1 == "ip:" {print $5}' $file >> $FICHIER_INBOX
+			echo 
 			# grep -v "ip:" $file >> $FICHIER_INBOX
-
+			((i+=1))
 			# echo "\n" >> $FICHIER_INBOX
         done
 
 
 		CHOIX=$(yad --list --title="COLUMBA - Boite de reception" \
 			--width=700 --height=400 --center \
-			--column="Date" --column="De" --column="Objet" --column="gf"\
+			--column="No" --column="Date" --column="De" --column="Objet" \
 			$(cat "$FICHIER_INBOX" | tr '|' '\n') \
 			--button="Retour au menu: 0")
 			echo "" > $FICHIER_INBOX
 
 			echo $CHOIX
 		if [ ! -z "$CHOIX" ];then
-			expediteur=$(echo "$CHOIX" | cut -d'|' -f2)
-			objet=$(echo "$CHOIX" | cut -d'|' -f3)
-			message=$(echo "$CHOIX" | cut -d'|' -f4)
+			No=$(echo "$CHOIX" | cut -d'|' -f1)
+			date=$(echo "$CHOIX" | cut -d'|' -f2)
+			expediteur=$(echo "$CHOIX" | cut -d'|' -f3)
+			objet=$(echo "$CHOIX" | cut -d'|' -f4)
+			message=$(cat ${tab[$No]} | grep -v "ip:")
 			yad --title="Message de $expediteur" \
 			    --width=500 --height=300 --center \
-			    --text="Sujet: $objet\nDe : $expediteur\n\n--------------\n\n-$message Lorem ipsum dolor sit amet" \  
+			    --text="Sujet: $objet\nDate : $expediteur\n\n--------------\n\n-$message " \  
 		fi
 	fi
 	#Envoi du message apprès avoir écris l'ip du destinataire
