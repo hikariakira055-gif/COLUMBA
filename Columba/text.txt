@@ -1,0 +1,393 @@
+╭	╮	╰	╯	─	│
+	╔	╗	╚	╝	═	║
+	┏	┓	┗
+
+
+Ligne Horizontale	─	\u2500
+Ligne Verticale	│	\u2502
+Coin Haut-Gauche	┌	\u250c
+Coin Haut-Droit	┐	\u2510
+Coin Bas-Gauche	└	\u2514
+Coin Bas-Droit	┘	\u2518
+Té Droit (Vers gauche)	┤	\u2524
+Té Gauche (Vers droite)	├	\u251c
+Té Bas (Vers haut)	┴	\u2534
+Té Haut (Vers bas)	┬	\u252c
+Croisement / Croix	┼	\u253c
+
+
+C'est une excellente initiative pour ton ricing ! En japonais, on appelle cette collection de symboles les Kigō (記号 - symboles). Si tu veux que ton gestionnaire ressemble à une interface de hacker pro ou à l'animation des pipelines, tu as besoin de la table complète des Box-Drawing Characters.
+
+Voici la liste complète classée par style pour ton projet (Projekuto - プロジェクト) :
+1. Le style Classique (Futsū - 普通)
+
+C'est le plus compatible, parfait pour un rendu propre et minimaliste.
+Nom	Symbole	Code Hex
+Ligne Horizontale	─	\u2500
+Ligne Verticale	│	\u2502
+Coin Haut-Gauche	┌	\u250c
+Coin Haut-Droit	┐	\u2510
+Coin Bas-Gauche	└	\u2514
+Coin Bas-Droit	┘	\u2518
+Té Droit (Vers gauche)	┤	\u2524
+Té Gauche (Vers droite)	├	\u251c
+Té Bas (Vers haut)	┴	\u2534
+Té Haut (Vers bas)	┬	\u252c
+Croisement / Croix	┼	\u253c
+2. Le style Arrondi (Marui - 丸い)
+
+C'est le style le plus "moderne" pour un terminal riced, très utilisé dans les config i3 ou polybar.
+
+    Haut-Gauche : ╭ (\u256d)
+
+    Haut-Droit : ╮ (\u256e)
+
+    Bas-Gauche : ╰ (\u2570)
+
+    Bas-Droit : ╯ (\u256f)
+
+3. Le style Épais / Gras (Futoi - 太い)
+
+Pour donner un aspect massif à tes fenêtres principales.
+
+    Horizontal : ━
+
+    Vertical : ┃
+
+    Coins : ┏ ┓ ┗ ┛
+
+    Intersections : ┣ ┫ ┻ ┳ ╋
+
+4. Le style Double (Nijuu - 二重)
+
+Pour un look "Retro-OS" ou très autoritaire (Style Makima).
+
+    Horizontal : ═
+
+    Vertical : ║
+
+    Coins : ╔ ╗ ╚ ╝
+
+    Intersections : ╠ ╣ ╩ ╦ ╬
+
+5. Les Blocs de remplissage (Mitasu - 満たす)
+
+Pour créer des barres de progression ou des ombres de fenêtres.
+
+    Plein : █
+
+    Sombre : ▓
+
+    Moyen : ▒
+
+    Clair : ░
+
+    Demi-bloc bas : ▄
+
+    Demi-bloc haut : ▀
+
+    1. La Gestion de l'Écran (Le Décor)Avant de dessiner ton interface de chat, tu dois préparer la zone de texte.tput clear : Efface tout l'écran et replace le curseur tout en haut à gauche (Ligne 0, Colonne 0). C'est beaucoup plus propre que la commande clear standard.tput smcup : Active l'écran alternatif du terminal.L'astuce de hacker : Quand ton script se fermera, l'utilisateur retrouvera son terminal exactement comme il l'a laissé, sans que ton chat ne pollue son historique de commandes !tput rmcup : Quitte l'écran alternatif (à mettre absolument à la fin de ton script).tput el : Efface tout à partir de la position actuelle du curseur jusqu'à la fin de la ligne. Ultra-pratique pour nettoyer la zone de saisie >  après l'envoi d'un message.2. Le Positionnement du Curseur (La Grille)Le terminal est une grille d'abscisses ($X$) et d'ordonnées ($Y$). Attention, en informatique, on commence à compter à partir de 0. La ligne 0 est tout en haut.tput cup <ligne> <colonne> : Déplace le curseur aux coordonnées exactes.Exemple : tput cup 12 40 place le curseur pile au milieu d'un terminal standard de 80x24.tput lines : Renvoie le nombre total de lignes de ton terminal actuel.tput cols : Renvoie le nombre total de colonnes.💡 Comment bloquer ta barre de saisie tout en bas ?Pour que ton read msg reste toujours sur la dernière ligne de l'écran, peu importe la taille de la fenêtre de ton pote, tu fais ça :Bashderniere_ligne=$(($(tput lines) - 1))
+tput cup $derniere_ligne 0
+echo -n "> "
+3. Les Couleurs (Le "Ricing" du Chat)C'est ici qu'on donne le style Cyberpunk / Makima à COLUMBA.tput setaf <numéro> : Change la couleur du texte (Foreground).tput setab <numéro> : Change la couleur de l'arrière-plan du texte (Background).La palette standard (0 à 7) :CodeCouleur0Noir1Rouge (Parfait pour le style Makima / Eva)2Vert3Jaune4Bleu5Magenta6Cyan7BlancSi ton terminal gère le 256 couleurs (ce qui est le cas de Kitty sur Arch), tu peux aller jusqu'à tput setaf 255 pour des dégradés de folie.4. Les Styles de Texte (Les Effets)tput bold : Met le texte en Gras (augmente aussi l'intensité de la couleur).tput smul : Active le mode souligné.tput rmul : Désactive le mode souligné.tput rev : Inverse les couleurs (le texte prend la couleur du fond et inversement).tput blink : Fait clignoter le texte (à utiliser avec modération, ou pour une alerte réseau !).tput sgr0 : LE PLUS IMPORTANT. Réinitialise tout (couleurs et styles) par défaut. Si tu l'oublies, tout ton terminal va rester de la couleur que tu as définie.5. Le Curseur Fantôme (L'Esthétique)tput civis : Rend le curseur totalement invisible. C'est génial quand tu affiches des menus ou des messages reçus pour éviter d'avoir un carré blanc qui clignote partout.tput cnorm : Réaffiche le curseur (indispensable juste avant un read pour que l'utilisateur voie ce qu'il tape).🛠️ Ton premier "Boilerplate" TUI en BashVoici comment structurer ton script tui.sh pour intégrer tput proprement :Bash#!/bin/bash
+
+# 1. Sauvegarde du terminal et nettoyage
+tput smcup # Écran alternatif
+tput civis # Cache le curseur
+tput clear
+
+# 2. Définition des raccourcis de style
+ROUGE=$(tput setaf 1)
+VERT=$(tput setaf 2)
+MAGENTA=$(tput setaf 5)
+GRAS=$(tput bold)
+RESET=$(tput sgr0)
+
+# 3. Dessin de l'interface fixe
+tput cup 0 0
+echo "${MAGENTA}${GRAS}=== COLUMBA INTERFACE ===${RESET}"
+tput cup 1 0
+echo "--------------------------"
+
+# Position pour la zone de chat (Ligne 4)
+tput cup 4 0
+echo "${VERT}[System]${RESET} Connexion prête."
+
+# 4. Boucle d'interaction
+while true; do
+    # Calcul de la dernière ligne en temps réel
+    derniere_ligne=$(($(tput lines) - 1))
+    
+    # On va tout en bas pour la saisie
+    tput cup $derniere_ligne 0
+    tput el # On nettoie la ligne précédente
+    
+    tput cnorm # On réaffiche le curseur pour taper
+    echo -n "${ROUGE}Akira>${RESET} "
+    read -r msg
+    tput civis # On recache le curseur après la saisie
+    
+    if [ "$msg" = "exit" ]; then
+        break
+    fi
+done
+
+# 5. Nettoyage avant de quitter (CRITIQUE)
+tput cnorm # Remet le curseur
+tput rmcup # Quitte l'écran alternatif
+echo "COLUMBA Fermé."
+Avec ça, tu as les clés pour humilier tes potes et leur mode Netcat tout triste en ligne de commande. Tu veux qu'on regarde comment diviser ton écran pour que les pings reçus s'affichent en haut sans casser ta ligne read du bas ?
+
+
+2. Les briques de base de Zenity pour COLUMBA
+
+Zenity fonctionne très simplement : chaque option ouvre un type de fenêtre, et quand l'utilisateur valide, la fenêtre se ferme et renvoie le texte saisi directement dans ton script via le stdout.
+
+Voici les 4 boîtes de dialogue indispensables pour ton chat :
+A. La demande de l'adresse IP (Champs de texte)
+
+Pour demander l'IP de ton pote au démarrage du script :
+Bash
+
+dst_ip=$(zenity --entry \
+  --title="COLUMBA - Connexion" \
+  --text="Entrez l'adresse IP de destination :" \
+  --entry-text="127.0.0.1")
+
+# Si l'utilisateur clique sur Annuler
+if [ -z "$dst_ip" ]; then
+    exit 0
+fi
+
+B. La boîte de message d'erreur (Si le réseau lâche)
+
+Si le format de l'IP est mauvais ou si l'envoi échoue :
+Bash
+
+zenity --error \
+  --title="COLUMBA - Erreur" \
+  --text="Impossible de joindre l'hôte $dst_ip ou payload invalide !"
+
+C. La Saisie de Message en boucle
+
+Dans ton while true, au lieu du read msg tout moche dans le terminal, tu peux faire apparaître une jolie invite de saisie :
+Bash
+
+msg=$(zenity --entry \
+  --title="COLUMBA Chat" \
+  --text="Message à envoyer (Mot unique) :" \
+  --placeholder="Tape ton mot ici...")
+
+3. Ton Prototype sender_gui.sh réécrit avec Zenity
+
+Voici à quoi va ressembler ton script complet maintenant. C'est propre, compact et 100% graphique :
+Bash
+
+#!/bin/bash
+# Prototype COLUMBA - Version Zenity GUI
+
+# 1. Demande de l'IP
+dst_ip=$(zenity --entry \
+  --title="COLUMBA - Init" \
+  --text="Adresse IP cible :" \
+  --entry-text="127.0.0.1")
+
+# Sécurité si clic sur Annuler
+if [ -z "$dst_ip" ]; then
+    zenity --info --text="Fermeture de COLUMBA."
+    exit 0
+fi
+
+# 2. Boucle de Chat
+while true; do
+    msg=$(zenity --entry \
+      --title="COLUMBA - Sender" \
+      --text="Entrez votre message :")
+
+    # Si l'utilisateur ferme la fenêtre ou fait Annuler, on quitte la boucle
+    if [ $? -ne 0 ] || [ -z "$msg" ]; then
+        break
+    fi
+
+    # Encodage Hexa propre sans saut de ligne parasite
+    hash=$(echo -n "$msg" | xxd -p | tr -d '\n')
+
+    # Injection ICMP
+    ping -c 1 -p "$hash" "$dst_ip" > /dev/null
+
+    # Optionnel : Petite notification discrète en bas de ton écran Arch
+    zenity --notification --text="Mot '$msg' injecté vers $dst_ip"
+done
+
+zenity --info --text="Session COLUMBA terminée."
+
+Le gros avantage de cette version :
+
+Quand tu tapes ton mot dans la fenêtre Zenity et que tu fais "Entrée", la fenêtre se ferme, le ping part, et la fenêtre se rouvre instantanément pour le mot suivant. Ça fait une boucle de saisie très fluide.
+
+Teste-le sur ton système pour voir si les fenêtres GTK s'intègrent bien avec ton environnement. Qu'est-ce que tu en penses graphiquement ? Ça claque plus que le terminal brut ? ⛓️🩸
+
+zenity --entry \
+  --title="COLUMBA MAINFRAME" \
+  --text="Initialisation du protocole de communication furtif..." \
+  --width=600 \
+  --height=400
+
+Exemple de Switch (Menu principal vers Chat)
+Bash
+
+# Fenêtre 1 : Le Menu de choix
+choix=$(zenity --list \
+  --title="COLUMBA PROTOCOL" \
+  --width=400 --height=300 \
+  --column="Actions" "Démarrer le Chat" "Vérifier le Réseau" "Quitter")
+
+# Logique de Switch
+case "$choix" in
+    "Démarrer le Chat")
+        # On switch vers la fenêtre de saisie de l'IP
+        dst_ip=$(zenity --entry --title="Étape 2" --text="Entrez l'IP :")
+        ;;
+    "Vérifier le Réseau")
+        zenity --info --text="Analyse des interfaces en cours..."
+        ;;
+    *)
+        exit 0
+        ;;
+esac
+
+3. Les Fenêtres Complexes (La Customisation)
+
+Zenity propose des types de fenêtres beaucoup plus riches que la simple zone de texte.
+A. Le Formulaire Multi-Champs (--forms)
+
+C'est la boîte ultime pour configurer COLUMBA d'un seul coup (plus besoin de faire 3 fenêtres d'affilée).
+Bash
+
+donnees=$(zenity --forms \
+  --title="COLUMBA - Profil" \
+  --text="Configuration des paramètres d'injection" \
+  --add-entry="Adresse IP Cible" \
+  --add-password="Clé de chiffrement" \
+  --add-calendar="Date de validité")
+
+# Zenity renvoie les réponses séparées par une barre verticale : IP|Cle|Date
+# On peut les séparer proprement en Bash :
+IFS="|" read -r dst_ip cle date_valid <<< "$donnees"
+
+B. La Liste de Choix Évoluée (--list)
+
+Tu peux créer des tableaux avec des colonnes, et même des cases à cocher (--checklist) !
+Bash
+
+mode=$(zenity --list --checklist \
+  --title="Options de Furtivité" \
+  --column="Sélection" --column="Mode" \
+  TRUE "Masquer les logs" \
+  FALSE "Mode Turbo Ping" \
+  FALSE "Chiffrement Hexadécimal")
+
+  Résumé de ta boîte à outils de "Fenêtrerie"Type de FenêtreOption ZenitySon utilité pour toiSaisie unique--entryEnvoyer un mot.Formulaire complet--formsConfigurer IP + Pseudo + TTL d'un coup.Menu / Tableau--listChoisir entre envoyer, recevoir ou quitter.Notification de zone--notificationBulle discrète qui pop sur ton bureau Arch.
+
+
+  --//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//---/---//-/-/-/-/-/-/-/-//--//--//--//--//--//--//-//-//--//--//--
+
+  Yad exemple template 
+
+
+
+
+  #!/bin/bash
+# COLUMBA Mainframe v1.0 avec YAD
+
+# Couleurs pour le texte de la fenêtre (Pango/HTML markup)
+TEXTE="<span font='monospace 12' foreground='#00ff55'><b>[SYSTEM] : COLUMBA CORE ACTIVE</b></span>\n\n"
+TEXTE="$TEXTE<span font='monospace 10' foreground='#ffffff'>Sélectionnez une action dans le menu inférieur pour interagir avec le protocole réseau ICMP.</span>"
+
+# Lancement de la fenêtre principale
+# Chaque bouton renvoie un code d'erreur (Exit Code) différent : 10, 20 ou 30
+yad --title="COLUMBA MAINFRAME" \
+    --window-icon="network-transmit" \
+    --width=800 \
+    --height=600 \
+    --text="$TEXTE" \
+    --center \
+    --button="CONFIGURER L'IP:10" \
+    --button="ENVOYER UN MESSAGE:20" \
+    --button="QUITTER LE MAINFRAME:30"
+
+# Capture du bouton cliqué
+action=$?
+
+# Logique de switch selon le bouton cliqué
+case $action in
+    10)
+        # Bouton CONFIGURER
+        dst_ip=$(yad --entry --title="COLUMBA - IP" --text="Entrez l'IP cible :")
+        yad --info --text="IP configurée : $dst_ip"
+        ;;
+    20)
+        # Bouton ENVOYER
+        msg=$(yad --entry --title="COLUMBA - Sender" --text="Entrez votre message (mot unique) :")
+        hash=$(echo -n "$msg" | xxd -p | tr -d '\n')
+        # ping -c 1 -p "$hash" "$dst_ip"
+        yad --notification --text="Paquet $hash injecté !"
+        ;;
+    30|252)
+        # Bouton QUITTER (ou fermeture de la fenêtre avec la croix)
+        echo "Mainframe arrêté."
+        exit 0
+        ;;
+esac
+
+
+
+
+
+#!/bin/bash
+# COLUMBA Mainframe Avancé avec YAD
+
+# Fichier temporaire pour stocker la configuration en direct
+CONFIG_FILE="/tmp/columba.cfg"
+echo "127.0.0.1|Akira" > "$CONFIG_FILE"
+
+# Fonction magique qui s'exécute QUAND on clique sur le bouton "Injecter"
+# SANS fermer la fenêtre principale !
+injecter_paquet() {
+    # On récupère ce que l'utilisateur a tapé dans la fenêtre
+    # YAD envoie les arguments dans l'ordre des champs : $1=IP, $2=Pseudo, $3=Message
+    local ip="$1"
+    local msg="$3"
+
+    if [ -n "$msg" ]; then
+        # Encodage Hexa
+        local hash=$(echo -n "$msg" | xxd -p | tr -d '\n')
+        
+        # Envoi du Ping secret
+        ping -c 1 -p "$hash" "$ip" > /dev/null
+        
+        # Petite notification pour confirmer que ça a marché
+        yad --notification --text="[COLUMBA] '$msg' envoyé à $ip !"
+    fi
+}
+export -f injecter_paquet # Indispensable pour que YAD puisse voir la fonction
+
+# Récupération des valeurs initiales
+IP_INITIALE=$(cut -d'|' -f1 "$CONFIG_FILE")
+PSEUDO_INITIAL=$(cut -d'|' -f2 "$CONFIG_FILE")
+
+# Lancement de la fenêtre unique et persistante
+yad --form \
+    --title="COLUMBA MAINFRAME" \
+    --width=500 --height=350 \
+    --text="<span foreground='#00ff55' font='monospace 11'><b>[STATUS] SYSTEME DE TRANSMISSION ICMP</b></span>" \
+    --image="network-transmit" \
+    --align=center \
+    --field="🌐 Adresse IP Cible" "$IP_INITIALE" \
+    --field="👤 Votre Pseudo" "$PSEUDO_INITIAL" \
+    --field="💬 Message (Mot unique)" "" \
+    --field="⚡ Action:BTN" 'bash -c "injecter_paquet %1 %2 %3"' \
+    --button="FERMER LE MAINFRAME:0"
+
+# Nettoyage
+rm -f "$CONFIG_FILE"

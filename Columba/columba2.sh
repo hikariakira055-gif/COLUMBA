@@ -7,10 +7,11 @@ FICHIER_BG="columba.png"
         #echo "$(date +%d/%m)|Yuto|test 2|Whassup man" >> "$FICHIER_INBOX"
 #fi
 
+
 	pseudo=$(echo "$connexion" | cut -d'|' -f1)
 while true; do
 	yad --form --title="COLUMBA -Menu Principal" \
-            --window-icon="mail-read" \
+            --window-icon="columba123.png" \
 	    --image="$FICHIER_BG" \
 	    --width=400 --height=200 --center \
 	    --text="<b>Bienvenu $pseudo dans votre messagerie</b>" \
@@ -41,6 +42,7 @@ while true; do
 			awk '$1 == "ip:" {print $4}' $file >> $FICHIER_INBOX
 			awk '$1 == "ip:" {print $2}' $file >> $FICHIER_INBOX
 			awk '$1 == "ip:" {print $6}' $file >> $FICHIER_INBOX
+			awk '$1 == "ip:" {print $8}' $file >> $FICHIER_INBOX
 			echo 
 			# grep -v "ip:" $file >> $FICHIER_INBOX
 			((i+=1))
@@ -49,8 +51,9 @@ while true; do
 
 
 		CHOIX=$(yad --list --title="COLUMBA - Boite de reception" \
+			--window-icon="columba123.png" \
 			--width=700 --height=400 --center \
-			--column="No" --column="Date" --column="De" --column="Objet" \
+			--column="No" --column="Date" --column="Pour" --column="Objet" --column="De" \
 			$(cat "$FICHIER_INBOX" | tr '|' '\n') \
 			--button="Retour au menu: 0")
 			echo "" > $FICHIER_INBOX
@@ -61,26 +64,30 @@ while true; do
 			date=$(echo "$CHOIX" | cut -d'|' -f2)
 			expediteur=$(echo "$CHOIX" | cut -d'|' -f3)
 			objet=$(echo "$CHOIX" | cut -d'|' -f4)
+			from=$(echo "$CHOIX" | cut -d'|' -f5)
 			message=$(cat ${tab[$No]} | grep -v "ip:")
 			yad --title="Message de $expediteur" \
 			    --width=500 --height=300 --center \
-			    --text="Sujet: $objet\nDate : $expediteur\n\n--------------\n\n-$message " \  
+			    --text="Sujet: $objet\nDate : $date\nDe: $from\n════════════════════════════════════════════════════════════\n$message " \  
 		fi
 	fi
 	#Envoi du message apprès avoir écris l'ip du destinataire
 	if [ $ACTION -eq 3 ];then
 		courrier=$(yad --form --title="Nouveau Message" \
-			--width=500 --height=400 --center \
-			--field="Addresse du destinataire" "" \
+			--width=600 --height=500 --center \
+			--window-icon="columba123.png" \
+			--field="De" "" \
+			--field="Pour(IP)" "" \
 			--field="Addresse du serveur" "" \
 			--field="Objet" "" \
 			--field="Message:TXT" "" \
 			--button="Annuler:1" --button="Envoyer:0")
 		if [ $? -eq 0 ];then
-			dest=$(echo "$courrier" | cut -d'|' -f1)
-			srv=$(echo "$courrier" | cut -d'|' -f2)
-			obj=$(echo "$courrier" | cut -d'|' -f3)
-			texte=$(echo "$courrier" | cut -d'|' -f4 | tr '\n' ' ')
+			name=$(echo "$courrier" | cut -d'|' -f1)
+			dest=$(echo "$courrier" | cut -d'|' -f2)
+			srv=$(echo "$courrier" | cut -d'|' -f3)
+			obj=$(echo "$courrier" | cut -d'|' -f4)
+			texte=$(echo "$courrier" | cut -d'|' -f5 | tr '\n' ' ')
 			#echo "$(date +%d/%m)|Moi (vers $dest)|$sujet|$texte" >> "$FICHIER_INBOX"
 			
 
@@ -100,7 +107,7 @@ while true; do
 
 					# touch msg_
 					date=$(date +%d-%m-%Y)
-					echo "ip: $dest date: $date obj: $obj" > msg_
+					echo "ip: $dest date: $date obj: $obj De: $name" > msg_
 					echo " " >> msg_
 					echo $texte >> msg_
 					
