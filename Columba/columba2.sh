@@ -1,7 +1,7 @@
 #!/bin/bash
 export GDK_BACKEND=x11
 ./client/clisten.sh &
-FICHIER_BG="columba.png"
+FICHIER_BG="yoru.png"
 #if [ -d "$FICHIER_INBOX" ];then
 	#echo "$(date +%d/%m)|Akira|Re: test|Salut" > "$FICHIER_INBOX"
         #echo "$(date +%d/%m)|Yuto|test 2|Whassup man" >> "$FICHIER_INBOX"
@@ -11,14 +11,28 @@ FICHIER_BG="columba.png"
 	pseudo=$(echo "$connexion" | cut -d'|' -f1)
 while true; do
 	yad --form --fixed --title="COLUMBA -Menu Principal" \
-            --window-icon="columba123.png" \
+        --window-icon="columba123.png" \
 	    --image="$FICHIER_BG" \
 	    --width=400 --height=200 --center \
 	    --text="<b>Bienvenu $pseudo dans votre messagerie</b>\nV1.0 Copyright" \
+		--button="Edit:4" \
 	    --button="Boite de Réception!mail-read:2" \
 	    --button="Rédiger un message!mail-send:3" \
 	    --button="Quitter!exit:1"
 	ACTION=$?
+	if [ $ACTION -eq 4 ];then
+
+		IMG=$(yad --form --fixed --title="edit" \
+			--window-icon="columba123.png" \
+			--width=200 --height=100 --center \
+			--field="path" "" \
+			--button="Ok: 0")
+			if [ -f $IMG ]; then
+				FICHIER_BG=$IMG
+			fi
+		
+
+	fi
 	if [ $ACTION -eq 1 ];then
 		echo "Fermeture de l'application."
 		pkill -f ncat
