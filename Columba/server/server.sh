@@ -1,5 +1,5 @@
 #!/bin/bash
-pkill -f ncat
+#pkill -f ncat
 ip_user=$(ip a >> o && grep "inet " o >> p && awk '{print $2}' p |tail -1 >> a && awk -F '/' '{print $1}' a)
 rm a o p
 ./slisten.sh >/dev/null 2>&1 &
@@ -25,7 +25,7 @@ while true; do
             if [ $ping_result1 = "6" ]; then
                 echo "votre correspondant est disponible "
 
-                #ncat $uss 5555 < $file
+                ncat $uss 50001 < $file
                 rm $file
 
             else

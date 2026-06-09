@@ -1,0 +1,114 @@
+#!/bin/bash
+export GDK_BACKEND=x11
+./client/clisten.sh &
+FICHIER_BG="columba.png"
+#if [ -d "$FICHIER_INBOX" ];then
+	#echo "$(date +%d/%m)|Akira|Re: test|Salut" > "$FICHIER_INBOX"
+        #echo "$(date +%d/%m)|Yuto|test 2|Whassup man" >> "$FICHIER_INBOX"
+#fi
+
+	pseudo=$(echo "$connexion" | cut -d'|' -f1)
+while true; do
+	yad --form --title="COLUMBA -Menu Principal" \
+            --window-icon="mail-read" \
+	    --image="$FICHIER_BG" \
+	    --width=400 --height=200 --center \
+	    --text="<b>Bienvenu $pseudo dans votre messagerie</b>" \
+	    --button="Boite de Réception!mail-read:2" \
+	    --button="Rédiger un message:mail-send:3" \
+	    --button="Quitter!exit:1"
+	ACTION=$?
+	if [ $ACTION -eq 1 ];then
+		echo "Fermeture de l'application."
+		pkill -f ncat
+		killall -9 clisten.sh
+		fuser -9 -k 50000/tcp 50001/tcp
+		exit 0
+	fi
+	#Écoute en attente de message
+	if [ $ACTION -eq 2 ];then
+		FICHIER_INBOX="./client/inbox__"
+
+		for file in ./client/inbox/*.in; do 
+			
+			# date=$(awk '$1 == "ip:" {print $4}' $file) 
+			# ip=$(awk '$1 == "ip:" {print $2}' $file)
+
+			# msg=$("$date|$ip")
+			awk '$1 == "ip:" {print $4}' $file >> $FICHIER_INBOX
+			awk '$1 == "ip:" {print $2}' $file >> $FICHIER_INBOX
+			awk '$1 == "ip:" {print $6}' $file >> $FICHIER_INBOX
+			awk '$1 == "ip:" {print $5}' $file >> $FICHIER_INBOX
+			# grep -v "ip:" $file >> $FICHIER_INBOX
+
+			# echo "\n" >> $FICHIER_INBOX
+        done
+
+
+		CHOIX=$(yad --list --title="COLUMBA - Boite de reception" \
+			--width=700 --height=400 --center \
+			--column="Date" --column="De" --column="Objet" --column="gf"\
+			$(cat "$FICHIER_INBOX" | tr '|' '\n') \
+			--button="Retour au menu: 0")
+			echo "" > $FICHIER_INBOX
+
+			echo $CHOIX
+		if [ ! -z "$CHOIX" ];then
+			expediteur=$(echo "$CHOIX" | cut -d'|' -f2)
+			objet=$(echo "$CHOIX" | cut -d'|' -f3)
+			message=$(echo "$CHOIX" | cut -d'|' -f4)
+			yad --title="Message de $expediteur" \
+			    --width=500 --height=300 --center \
+			    --text="Sujet: $objet\nDe : $expediteur\n\n--------------\n\n-$message Lorem ipsum dolor sit amet" \  
+		fi
+	fi
+	#Envoi du message apprès avoir écris l'ip du destinataire
+	if [ $ACTION -eq 3 ];then
+		courrier=$(yad --form --title="Nouveau Message" \
+			--width=500 --height=400 --center \
+			--field="Addresse du destinataire" "" \
+			--field="Addresse du serveur" "" \
+			--field="Objet" "" \
+			--field="Message:TXT" "" \
+			--button="Annuler:1" --button="Envoyer:0")
+		if [ $? -eq 0 ];then
+			dest=$(echo "$courrier" | cut -d'|' -f1)
+			srv=$(echo "$courrier" | cut -d'|' -f2)
+			obj=$(echo "$courrier" | cut -d'|' -f3)
+			texte=$(echo "$courrier" | cut -d'|' -f4 | tr '\n' ' ')
+			#echo "$(date +%d/%m)|Moi (vers $dest)|$sujet|$texte" >> "$FICHIER_INBOX"
+			
+
+			set counter=0
+			#localhost: tokony hatao ny addressen'le serveur
+			ping -c 5 $srv > a
+			check=$(cut -d' ' -f1 a | head -n 6)
+			rm a
+			for val in $check;
+			do
+				if [ $val="64" ];then
+					counter=$((counter+1))
+				fi
+			done
+				if [ $counter="6" ];then
+					yad --text="le serveur est disponible"
+
+					# touch msg_
+					date=$(date +%d-%m-%Y)
+					echo "ip: $dest date: $date obj: $obj" > msg_
+					echo " " >> msg_
+					echo $texte >> msg_
+					
+					ncat $srv 50000 < msg_ 
+					#rm msg_
+
+
+				else
+					yad --text="Désolé mais le serveur n'est pas disponible"
+				fi
+
+
+		fi
+	fi
+done
+			  
