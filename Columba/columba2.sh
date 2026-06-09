@@ -10,13 +10,13 @@ FICHIER_BG="columba.png"
 
 	pseudo=$(echo "$connexion" | cut -d'|' -f1)
 while true; do
-	yad --form --title="COLUMBA -Menu Principal" \
+	yad --form --fixed --title="COLUMBA -Menu Principal" \
             --window-icon="columba123.png" \
 	    --image="$FICHIER_BG" \
 	    --width=400 --height=200 --center \
-	    --text="<b>Bienvenu $pseudo dans votre messagerie</b>" \
+	    --text="<b>Bienvenu $pseudo dans votre messagerie</b>\nV1.0 Copyright" \
 	    --button="Boite de Réception!mail-read:2" \
-	    --button="Rédiger un message:mail-send:3" \
+	    --button="Rédiger un message!mail-send:3" \
 	    --button="Quitter!exit:1"
 	ACTION=$?
 	if [ $ACTION -eq 1 ];then
@@ -50,7 +50,7 @@ while true; do
         done
 
 
-		CHOIX=$(yad --list --title="COLUMBA - Boite de reception" \
+		CHOIX=$(yad --list --fixed --title="COLUMBA - Boite de reception" \
 			--window-icon="columba123.png" \
 			--width=700 --height=400 --center \
 			--column="No" --column="Date" --column="Pour" --column="Objet" --column="De" \
@@ -73,7 +73,7 @@ while true; do
 	fi
 	#Envoi du message apprès avoir écris l'ip du destinataire
 	if [ $ACTION -eq 3 ];then
-		courrier=$(yad --form --title="Nouveau Message" \
+		courrier=$(yad --form --fixed --title="Nouveau Message" \
 			--width=600 --height=500 --center \
 			--window-icon="columba123.png" \
 			--field="De" "" \
@@ -81,7 +81,7 @@ while true; do
 			--field="Addresse du serveur" "" \
 			--field="Objet" "" \
 			--field="Message:TXT" "" \
-			--button="Annuler:1" --button="Envoyer:0")
+			--button="Annuler:1" --button="Envoyer!mail-send:0")
 		if [ $? -eq 0 ];then
 			name=$(echo "$courrier" | cut -d'|' -f1)
 			dest=$(echo "$courrier" | cut -d'|' -f2)
