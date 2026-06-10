@@ -1,6 +1,10 @@
 #!/bin/bash
 export GDK_BACKEND=x11
-./client/clisten.sh &
+
+cd client
+./clisten.sh >/dev/null 2>&1 &
+cd ..
+
 FICHIER_BG="yoru.png"
 #if [ -d "$FICHIER_INBOX" ];then
 	#echo "$(date +%d/%m)|Akira|Re: test|Salut" > "$FICHIER_INBOX"
@@ -15,22 +19,46 @@ while true; do
 	    --image="$FICHIER_BG" \
 	    --width=400 --height=200 --center \
 	    --text="<b>Bienvenu $pseudo dans votre messagerie</b>\nV1.0 Copyright" \
-		--button="Edit:4" \
+		--button="Other:4" \
 	    --button="Boite de Réception!mail-read:2" \
 	    --button="Rédiger un message!mail-send:3" \
 	    --button="Quitter!exit:1"
 	ACTION=$?
 	if [ $ACTION -eq 4 ];then
 
-		IMG=$(yad --form --fixed --title="edit" \
-			--window-icon="columba123.png" \
-			--width=200 --height=100 --center \
-			--field="path" "" \
-			--button="Ok: 0")
-			if [ -f $IMG ]; then
-				FICHIER_BG=$IMG
-			fi
 		
+		CHOIX1=$(yad --list --fixed --title="Columba" \
+					--window-icon="columba123.png" \
+					--width=500 --height=600 --center \
+					--column="list" \
+					"Server list" "Send file" "Calendar" "Notebook"\
+					--button="Back"
+		)
+		CHOIXX=$(echo "$CHOIX1" | cut -d'|' -f1)
+		echo "$CHOIXX"
+
+		if [ "$CHOIXX" = "Send file" ]; then
+
+			CHOOSEFILE=$(yad --file --center) 
+
+		elif [ "$CHOIXX" = "Calendar" ]; then
+
+			THEDATE=$(yad --calendar --center)
+
+		elif [ "$CHOIXX" = "Notebook" ]; then
+			
+			text=$(yad --form --title="Notebook" \
+						--width=700 --height=400 --center \
+						--field="Text:TXT" "" \
+						--button="Save:1" --button="Back:0")
+			if [ $? -eq 1 ]; then
+				path=$(yad --file --save)
+
+				echo -e $text
+
+			fi
+		fi
+
 
 	fi
 	if [ $ACTION -eq 1 ];then

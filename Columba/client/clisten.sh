@@ -1,4 +1,9 @@
 #!/bin/bash
+
+pkill -f ncat
+
+fuser -9 -k 50000/tcp 50001/tcp
+
 while true; do
     # On écoute sur le port 5555. ncat attend qu'un message arrive.
     # Dès que quelqu'un se connecte, 'read' intercepte la première ligne
