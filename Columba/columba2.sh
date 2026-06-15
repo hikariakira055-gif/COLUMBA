@@ -5,7 +5,15 @@ cd client
 ./clisten.sh >/dev/null 2>&1 &
 cd ..
 
-FICHIER_BG="yoru.png"
+CONF_FILE="./config/config.conf"
+TMP=$(cat $CONF_FILE | awk '$1 == "BG_IMG:" {print $2}')
+ICONS=$(cat $CONF_FILE | awk '$1 == "ICON_IMG:" {print $2}')
+SERVER_PORT=$(cat $CONF_FILE | awk '$1 == "SERVER_PORT:" {print $2}')
+LISTEN_PORT=$(cat $CONF_FILE | awk '$1 == "LISTEN_PORT:" {print $2}')
+
+FICHIER_BG=$TMP
+
+
 #if [ -d "$FICHIER_INBOX" ];then
 	#echo "$(date +%d/%m)|Akira|Re: test|Salut" > "$FICHIER_INBOX"
         #echo "$(date +%d/%m)|Yuto|test 2|Whassup man" >> "$FICHIER_INBOX"
@@ -14,8 +22,11 @@ FICHIER_BG="yoru.png"
 
 	pseudo=$(echo "$connexion" | cut -d'|' -f1)
 while true; do
+
+
+
 	yad --form --fixed --title="COLUMBA -Menu Principal" \
-        --window-icon="columba123.png" \
+        --window-icon="$ICONS" \
 	    --image="$FICHIER_BG" \
 	    --width=400 --height=200 --center \
 	    --text="<b>Bienvenu $pseudo dans votre messagerie</b>\nV1.0 Copyright" \
@@ -28,26 +39,23 @@ while true; do
 
 		
 		CHOIX1=$(yad --list --fixed --title="Columba" \
-					--window-icon="columba123.png" \
+					--window-icon="$ICONS" \
 					--width=500 --height=600 --center \
 					--column="list" \
-					"Server list" "Send file" "Calendar" "Notebook"\
+					"Server list" "Calendar" "Notebook"\
 					--button="Back"
 		)
 		CHOIXX=$(echo "$CHOIX1" | cut -d'|' -f1)
 		echo "$CHOIXX"
 
-		if [ "$CHOIXX" = "Send file" ]; then
+		if [ "$CHOIXX" = "Calendar" ]; then
 
-			CHOOSEFILE=$(yad --file --center) 
-
-		elif [ "$CHOIXX" = "Calendar" ]; then
-
-			THEDATE=$(yad --calendar --center)
+			THEDATE=$(yad --calendar --window-icon="$ICONS" --center)
 
 		elif [ "$CHOIXX" = "Notebook" ]; then
 			
 			text=$(yad --form --title="Notebook" \
+						--window-icon="$ICONS" \
 						--width=700 --height=400 --center \
 						--field="Text:TXT" "" \
 						--button="Save:1" --button="Back:0")
@@ -57,15 +65,18 @@ while true; do
 				echo -e $text
 
 			fi
-		fi
+		elif [ "$CHOIXX" = "Server list" ];then
+			echo "things"
 
+			
+		fi
 
 	fi
 	if [ $ACTION -eq 1 ];then
 		echo "Fermeture de l'application."
 		pkill -f ncat
 		killall -9 clisten.sh
-		fuser -9 -k 50000/tcp 50001/tcp
+		fuser -9 -k $SERVER_PORT/tcp 50001/tcp
 		exit 0
 	fi
 	#Écoute en attente de message
@@ -93,7 +104,7 @@ while true; do
 
 
 		CHOIX=$(yad --list --fixed --title="COLUMBA - Boite de reception" \
-			--window-icon="columba123.png" \
+			--window-icon="$ICONS" \
 			--width=700 --height=400 --center \
 			--column="No" --column="Date" --column="Pour" --column="Objet" --column="De" \
 			$(cat "$FICHIER_INBOX" | tr '|' '\n') \
@@ -117,7 +128,7 @@ while true; do
 	if [ $ACTION -eq 3 ];then
 		courrier=$(yad --form --fixed --title="Nouveau Message" \
 			--width=600 --height=500 --center \
-			--window-icon="columba123.png" \
+			--window-icon="$ICONS" \
 			--field="De" "" \
 			--field="Pour(IP)" "" \
 			--field="Addresse du serveur" "" \
@@ -153,7 +164,7 @@ while true; do
 					echo " " >> msg_
 					echo $texte >> msg_
 					
-					ncat $srv 50000 < msg_ 
+					ncat $srv $SERVER_PORT < msg_ 
 					#rm msg_
 
 
