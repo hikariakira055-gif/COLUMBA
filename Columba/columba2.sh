@@ -10,6 +10,8 @@ TMP=$(cat $CONF_FILE | awk '$1 == "BG_IMG:" {print $2}')
 ICONS=$(cat $CONF_FILE | awk '$1 == "ICON_IMG:" {print $2}')
 SERVER_PORT=$(cat $CONF_FILE | awk '$1 == "SERVER_PORT:" {print $2}')
 LISTEN_PORT=$(cat $CONF_FILE | awk '$1 == "LISTEN_PORT:" {print $2}')
+WRITE_BG=$(cat $CONF_FILE | awk '$1 == "WRITE_BG:" {print $2}')
+MAIL=$(cat $CONF_FILE | awk '$1 == "MAIL:" {print $2}')
 
 FICHIER_BG=$TMP
 
@@ -23,13 +25,11 @@ FICHIER_BG=$TMP
 	pseudo=$(echo "$connexion" | cut -d'|' -f1)
 while true; do
 
-
-
 	yad --form --fixed --title="COLUMBA -Menu Principal" \
         --window-icon="$ICONS" \
 	    --image="$FICHIER_BG" \
 	    --width=400 --height=200 --center \
-	    --text="<b>Bienvenu $pseudo dans votre messagerie</b>\nV1.0 Copyright" \
+	    --text="<b>Bienvenu dans votre messagerie</b>\nV1.0 Copyright\n Yoru" \
 		--button="Other:4" \
 	    --button="Boite de Réception!mail-read:2" \
 	    --button="Rédiger un message!mail-send:3" \
@@ -105,10 +105,12 @@ while true; do
 
 		CHOIX=$(yad --list --fixed --title="COLUMBA - Boite de reception" \
 			--window-icon="$ICONS" \
-			--width=700 --height=400 --center \
+			--image="$MAIL" \
+			--width=600 --height=600 --center \
+			--text="<b>Mail INBOX</b>\nFami" \
 			--column="No" --column="Date" --column="Pour" --column="Objet" --column="De" \
 			$(cat "$FICHIER_INBOX" | tr '|' '\n') \
-			--button="Retour au menu: 0")
+			--button="Retour au menu:1")
 			echo "" > $FICHIER_INBOX
 
 			echo $CHOIX
@@ -126,15 +128,19 @@ while true; do
 	fi
 	#Envoi du message apprès avoir écris l'ip du destinataire
 	if [ $ACTION -eq 3 ];then
+
 		courrier=$(yad --form --fixed --title="Nouveau Message" \
-			--width=600 --height=500 --center \
 			--window-icon="$ICONS" \
+			--width=400 --height=600 --center \
+			--image="$WRITE_BG" \
+			--text="<b>Email writer</b>\nMAKIMA" \
 			--field="De" "" \
 			--field="Pour(IP)" "" \
 			--field="Addresse du serveur" "" \
 			--field="Objet" "" \
 			--field="Message:TXT" "" \
 			--button="Annuler:1" --button="Envoyer!mail-send:0")
+
 		if [ $? -eq 0 ];then
 			name=$(echo "$courrier" | cut -d'|' -f1)
 			dest=$(echo "$courrier" | cut -d'|' -f2)
