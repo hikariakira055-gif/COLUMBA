@@ -85,7 +85,7 @@ while true; do
 	#Écoute en attente de message
 	if [ $ACTION -eq 2 ];then
 	declare -A tab
-		FICHIER_INBOX="./client/inbox__"
+		FICHIER_INBOX="$REPERTOIRE_DU_SCRIPT/client/inbox__"
 		i=1
 		for file in ./client/inbox/*.in; do 
 			

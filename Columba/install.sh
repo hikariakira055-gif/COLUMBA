@@ -149,19 +149,10 @@ else
 
 fi
 
-
-
-
-
-
-
 # if [ "$choix" -eq "Y" ]; then
-
-
 
 # elif [ "$cjoix" -eq "n" ]; then
 
-
 # fi
 
-# echo "${GREEN}Installation termine avec succes !${GREEN}"
+echo "${GREEN}Installation termine avec succes !${GREEN}"
