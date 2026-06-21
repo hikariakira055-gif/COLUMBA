@@ -1,5 +1,5 @@
 #!/bin/bash
-
+REPERTOIRE_DU_SCRIPT="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 while true; do
     #architecture
     arch=$(uname -a | awk '{print $1 " " $4 " " $13}')
@@ -31,7 +31,7 @@ while true; do
         --button="Quitter!exit:1"
     ACTION=$?
     if [ $ACTION -eq 2 ]; then
-        ./server_script.sh &
+        $REPERTOIRE_DU_SCRIPT/server_script.sh &
         yad --form --fixed --title="COLUMBA - Serveur" \
         --width=400 --height=200 --center \
         --text="<b>COLUMBA SERVER</b>\n \

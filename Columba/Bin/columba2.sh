@@ -1,11 +1,14 @@
 #!/bin/bash
 export GDK_BACKEND=x11
 
-cd client
+
+REPERTOIRE_DU_SCRIPT="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+CONF_FILE="$REPERTOIRE_DU_SCRIPT/config/config.conf"
+cd "$REPERTOIRE_DU_SCRIPT/client"
 ./clisten.sh >/dev/null 2>&1 &
 cd ..
 
-CONF_FILE="./config/config.conf"
+
 TMP=$(cat $CONF_FILE | awk '$1 == "BG_IMG:" {print $2}')
 ICONS=$(cat $CONF_FILE | awk '$1 == "ICON_IMG:" {print $2}')
 SERVER_PORT=$(cat $CONF_FILE | awk '$1 == "SERVER_PORT:" {print $2}')
@@ -75,7 +78,7 @@ while true; do
 	if [ $ACTION -eq 1 ];then
 		echo "Fermeture de l'application."
 		pkill -f ncat
-		killall -9 clisten.sh
+		killall -9 "$REPERTOIRE_DU_SCRIPT/client/clisten.sh"
 		fuser -9 -k $SERVER_PORT/tcp 50001/tcp
 		exit 0
 	fi
