@@ -2,7 +2,9 @@
 
 pkill -f ncat
 REPERTOIRE_DU_SCRIPT="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
-CONF_FILE="$REPERTOIRE_DU_SCRIPT/config/config.conf"
+NOW_FILE="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+CONF_FILE="$REPERTOIRE_DU_SCRIPT/../config/config.conf"
+LISTEN_PORT=$(cat $CONF_FILE | awk '$1 == "LISTEN_PORT:" {print $2}')
 
 fuser -9 -k 50000/tcp 50001/tcp
 
@@ -13,7 +15,7 @@ while true; do
     ncat -l -p $LISTEN_PORT | {
         if read -r first_line; then
             # On génère le nom du fichier avec la date
-            filename="$REPERTOIRE_DU_SCRIPT/inbox/inbox_$(date +%H%M%S).in"
+            filename="$NOW_FILE/inbox/inbox_$(date +%H%M%S).in"
             
             # On écrit la première ligne interceptée, puis tout le reste du message
             echo "$first_line" > "$filename"

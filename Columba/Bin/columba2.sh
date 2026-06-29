@@ -19,6 +19,7 @@ MAIL=$(cat $CONF_FILE | awk '$1 == "MAIL:" {print $2}')
 FICHIER_BG=$TMP
 
 
+
 #if [ -d "$FICHIER_INBOX" ];then
 	#echo "$(date +%d/%m)|Akira|Re: test|Salut" > "$FICHIER_INBOX"
         #echo "$(date +%d/%m)|Yuto|test 2|Whassup man" >> "$FICHIER_INBOX"
@@ -78,7 +79,7 @@ while true; do
 	if [ $ACTION -eq 1 ];then
 		echo "Fermeture de l'application."
 		pkill -f ncat
-		killall -9 "$REPERTOIRE_DU_SCRIPT/client/clisten.sh"
+		killall -9 "$REPERTOIRE_DU_SCRIPT/client/clisten.sh" &> /dev/null
 		fuser -9 -k $SERVER_PORT/tcp 50001/tcp
 		exit 0
 	fi
@@ -87,7 +88,7 @@ while true; do
 	declare -A tab
 		FICHIER_INBOX="$REPERTOIRE_DU_SCRIPT/client/inbox__"
 		i=1
-		for file in ./client/inbox/*.in; do 
+		for file in $REPERTOIRE_DU_SCRIPT/client/inbox/*.in; do 
 			
 			# date=$(awk '$1 == "ip:" {print $4}' $file) 
 			# ip=$(awk '$1 == "ip:" {print $2}' $file)
@@ -155,17 +156,11 @@ while true; do
 
 			set counter=0
 			#localhost: tokony hatao ny addressen'le serveur
-			ping -c 5 $srv > a
-			check=$(cut -d' ' -f1 a | head -n 6)
-			rm a
-			for val in $check;
-			do
-				if [ $val="64" ];then
-					counter=$((counter+1))
-				fi
-			done
-				if [ $counter="6" ];then
-					yad --text="le serveur est disponible"
+			#test ping ameliorer et sur d'etre fonctionnel
+
+			if ping -c 5 $srv &> /dev/null; then
+
+				yad --text="le serveur est disponible"
 
 					# touch msg_
 					date=$(date +%d-%m-%Y)
@@ -174,12 +169,14 @@ while true; do
 					echo $texte >> msg_
 					
 					ncat $srv $SERVER_PORT < msg_ 
-					#rm msg_
 
+			else
 
-				else
 					yad --text="Désolé mais le serveur n'est pas disponible"
-				fi
+					bash "./$REPERTOIRE_DU_SCRIPT/Pong/main"
+
+			fi
+
 
 
 		fi

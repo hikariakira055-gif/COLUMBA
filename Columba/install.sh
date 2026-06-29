@@ -127,6 +127,7 @@ if ping -c 5 8.8.8.8 &> /dev/null; then
 
         sudo ln -s "$PWD/Bin/columba2.sh" /usr/local/bin/columba
         sudo ln -s "$PWD/Bin/server/server.sh" /usr/local/bin/columba_srv
+        echo "${GREEN}Installation termine avec succes !${GREEN}"
 
     elif [ "$choix" = "n" ]; then
 
@@ -155,4 +156,3 @@ fi
 
 # fi
 
-echo "${GREEN}Installation termine avec succes !${GREEN}"
