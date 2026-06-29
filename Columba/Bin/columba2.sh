@@ -166,7 +166,7 @@ while true; do
 					date=$(date +%d-%m-%Y)
 					echo "ip: $dest date: $date obj: $obj De: $name" > msg_
 					echo " " >> msg_
-					echo $texte >> msg_
+					echo "$texte" >> msg_
 					
 					ncat $srv $SERVER_PORT < msg_ 
 
